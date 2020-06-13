@@ -9,7 +9,7 @@
     :title "graphmosphere"
     :renderer :p3d
     :size [500 500]
-    :setup #(draw/setup-state {:a "a"})
+    :setup #(draw/setup-state {})
     :update #'draw/update-state
     :draw #'draw/draw-state
     :on-close #'draw/on-close
