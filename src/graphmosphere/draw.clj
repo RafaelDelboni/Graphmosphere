@@ -32,7 +32,12 @@
      :draw   {:fill   {:r 255 :g 255 :b 255 :a 255}
               :stroke {:r 0 :g 0 :b 0 :a 255}
               :pos    {:x 150 :y 100 :z 0}
-              :echo   {:iter 20 :var-size -15 :var-keys [:x :z]}}}]})
+              :echo   {:iter 20 :var-size -15 :var-keys [:x :z]}}}
+    {:type   :arc
+     :shape  {:width 50 :height 50 :start 0 :stop q/QUARTER-PI :mode :pie}
+     :draw   {:fill   {:r 255 :g 255 :b 255 :a 255}
+              :stroke {:r 255 :g 0 :b 0 :a 255 :weight 3}
+              :pos    {:x -150 :y -50 :z 0}}}]})
 
 ; pure logic fns
 (defn calculate-echo-variation
@@ -58,7 +63,8 @@
   test-temporary-state)
 
 (defn draw-stroke
-  [{:keys [r g b a] :as stroke}]
+  [{:keys [r g b a weight] :as stroke}]
+  (q/stroke-weight (or weight 1))
   (if stroke
     (q/stroke r g b a)
     (q/no-stroke)))
@@ -102,12 +108,17 @@
   [{:keys [draw] {:keys [x1 y1 x2 y2 x3 y3 x4 y4]} :shape}]
   (draw-func-with-args #(q/quad x1 y1 x2 y2 x3 y3 x4 y4) draw))
 
+(defn draw-2d-arc
+  [{:keys [draw] {:keys [width height start stop mode]} :shape}]
+  (draw-func-with-args #(q/arc 0 0 width height start stop mode) draw))
+
 (defn draw-shape
   [{:keys [type] :as shape}]
   (case type
     :sphere (draw-3d-sphere shape)
     :box (draw-3d-box shape)
     :quad (draw-2d-quad shape)
+    :arc (draw-2d-arc shape)
     (q/debug shape)))
 
 (defn draw-state [state]
