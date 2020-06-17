@@ -37,7 +37,11 @@
      :shape  {:width 50 :height 50 :start 0 :stop q/QUARTER-PI :mode :pie}
      :draw   {:fill   {:r 255 :g 255 :b 255 :a 255}
               :stroke {:r 255 :g 0 :b 0 :a 255 :weight 3}
-              :pos    {:x -150 :y -50 :z 0}}}]})
+              :pos    {:x -150 :y -50 :z 0}}}
+    {:type   :ellipse
+     :shape  {:width 5 :height 15}
+     :draw   {:fill   {:r 255 :g 255 :b 255 :a 255}
+              :pos    {:x 50 :y -50 :z 0 :angle q/QUARTER-PI}}}]})
 
 ; pure logic fns
 (defn calculate-echo-variation
@@ -76,10 +80,12 @@
     (q/no-fill)))
 
 (defn do-draw
-  [func {:keys [stroke fill] {:keys [x y z]} :pos}]
+  [func {:keys [stroke fill] {:keys [x y z angle]} :pos}]
   (draw-stroke stroke)
   (draw-fill fill)
-  (q/with-translation [x y z] (func)))
+  (q/with-translation [x y z]
+    (q/with-rotation [(or angle 0)]
+      (func))))
 
 (defn do-echo-draw
   [func {:keys [echo] :as draw}]
@@ -112,6 +118,10 @@
   [{:keys [draw] {:keys [width height start stop mode]} :shape}]
   (draw-func-with-args #(q/arc 0 0 width height start stop mode) draw))
 
+(defn draw-2d-ellipse 
+  [{:keys [draw] {:keys [width height]} :shape}]
+  (draw-func-with-args #(q/ellipse 0 0 width height) draw))
+
 (defn draw-shape
   [{:keys [type] :as shape}]
   (case type
@@ -119,6 +129,7 @@
     :box (draw-3d-box shape)
     :quad (draw-2d-quad shape)
     :arc (draw-2d-arc shape)
+    :ellipse (draw-2d-ellipse shape)
     (q/debug shape)))
 
 (defn draw-state [state]
