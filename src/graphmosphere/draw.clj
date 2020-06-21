@@ -1,5 +1,6 @@
 (ns graphmosphere.draw
-  (:require [quil.core :as q]))
+  (:require [graphmosphere.logic.draw :as logic]
+            [quil.core :as q]))
 
 (def test-temporary-state
   {:shapes
@@ -60,23 +61,6 @@
               :fill   {:r 125 :g 125 :b 125 :a 255}
               :pos    {:x 100 :y -100 :z 0}}}]})
 
-; pure logic fns
-(defn calculate-echo-variation
-  [pos var-keys var-size]
-  (->> var-keys
-       (mapv (fn [vertice]
-               (-> pos
-                   (update-in [vertice] #(+ var-size %))
-                   (select-keys [vertice]))))
-       (reduce merge pos)))
-
-(defn update-echo-state
-  [state base-key {:keys [var-keys var-size]}]
-  (update state
-          base-key
-          #(calculate-echo-variation % var-keys var-size)))
-
-; impure integration fns
 (defn setup-state [state]
   (merge {} state))
 
@@ -110,7 +94,7 @@
     (loop [state draw iterations (dec iter)]
       (do-draw func state)
       (if-not (= iterations 0)
-        (recur (update-echo-state state :pos echo)
+        (recur (logic/update-echo-state state :pos echo)
                (dec iterations))))
     (do-draw func draw)))
 

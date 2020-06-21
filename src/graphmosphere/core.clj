@@ -8,7 +8,7 @@
   (q/sketch
     :title "graphmosphere"
     :renderer :p3d
-    :size [500 500]
+    :size [1000 1000]
     :setup #(draw/setup-state {})
     :update #'draw/update-state
     :draw #'draw/draw-state
